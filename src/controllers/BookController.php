@@ -3,8 +3,6 @@
 namespace app\controllers;
 
 use app\models\Book;
-use app\services\BookService;
-use app\repositories\BookRepository;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -17,10 +15,16 @@ class BookController extends Controller
     private BookServiceInterface $service;
     private BookRepositoryInterface $repo;
 
-    public function __construct($id, $module, $config = [])
+    public function __construct(
+        $id, 
+        $module, 
+        BookServiceInterface $service,
+        BookRepositoryInterface $repo,
+        $config = []
+    )
     {
-        $this->repo = new BookRepository();
-        $this->service = new BookService($this->repo);
+        $this->repo = $repo;
+        $this->service = $service;
         parent::__construct($id, $module, $config);
     }
 
@@ -33,7 +37,7 @@ class BookController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['@'], // только авторизованные
+                        'roles' => ['@'],
                     ],
                 ],
             ],

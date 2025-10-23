@@ -6,6 +6,13 @@ $this->title = 'Каталог книг';
 ?>
 <h1><?= Html::encode($this->title) ?></h1>
 
+<p>
+    <?= Html::a('ТОП-10 авторов', ['report/top-authors'], [
+        'class' => 'btn btn-primary',
+        'style' => 'margin-bottom:15px;'
+    ]) ?>
+</p>
+
 <ul>
 <?php foreach ($books as $book): ?>
     <li>
