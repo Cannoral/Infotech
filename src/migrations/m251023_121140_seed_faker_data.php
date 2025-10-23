@@ -3,7 +3,7 @@
 use yii\db\Migration;
 use Faker\Factory as Faker;
 
-class m251023_103558_seed_faker_data extends Migration
+class m251023_121140_seed_faker_data extends Migration
 {
     /**
      * Сидирование базы данных с использованием Faker
@@ -49,6 +49,15 @@ class m251023_103558_seed_faker_data extends Migration
                 'author_id' => $faker->numberBetween(1, 10),
             ]);
         }
+
+        // пользователи
+        $adminPassword = Yii::$app->security->generatePasswordHash('admin');
+        $userPassword  = Yii::$app->security->generatePasswordHash('user');
+
+        $this->batchInsert('user', ['username', 'password_hash', 'auth_key'], [
+            ['admin', $adminPassword, Yii::$app->security->generateRandomString()],
+            ['user',  $userPassword,  Yii::$app->security->generateRandomString()],
+        ]);
     }
 
     /**
