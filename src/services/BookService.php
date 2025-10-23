@@ -3,7 +3,7 @@
 namespace app\services;
 
 use app\models\Book;
-use app\repositories\BookRepository;
+use app\domains\Book\BookRepositoryInterface;
 use yii\db\Exception;
 use app\domains\Book\BookServiceInterface;
 use yii\web\UploadedFile;
@@ -12,16 +12,16 @@ use Yii;
 
 class BookService implements BookServiceInterface
 {
-    private BookRepository $repo;
+    private BookRepositoryInterface $repo;
     private CoverServiceInterface $coverService;
 
-    public function __construct(BookRepository $repo, CoverServiceInterface $coverService)
+    public function __construct(BookRepositoryInterface $repo, CoverServiceInterface $coverService)
     {
         $this->repo = $repo;
         $this->coverService = $coverService;
     }
 
-    public function create(array $data): ?Book
+    public function create(Book $book, array $data): ?Book
     {
         $book = new Book();
         if (!$book->load($data)) {
@@ -47,11 +47,11 @@ class BookService implements BookServiceInterface
         }
 
         if (!empty($book->authorIds)) {
-        Yii::$app->db->createCommand()
-            ->batchInsert('book_author', ['book_id', 'author_id'], 
-                array_map(fn($id) => [$book->id, $id], $book->authorIds)
-            )
-            ->execute();
+            Yii::$app->db->createCommand()
+                ->batchInsert('book_author', ['book_id', 'author_id'], 
+                    array_map(fn($id) => [$book->id, $id], $book->authorIds)
+                )
+                ->execute();
         }
 
         return $book;

@@ -13,6 +13,15 @@ $this->title = $book->title;
     ]) ?>
 </p>
 
+<?= Html::a('Удалить', ['book/delete', 'id' => $book->id], [
+    'class' => 'btn btn-danger',
+    'data' => [
+        'confirm' => 'Вы уверены, что хотите удалить эту книгу?',
+        'method' => 'post',
+    ],
+    'style' => 'margin-left:10px;',
+]) ?>
+
 <?php if ($book->cover): ?>
     <p>Текущая обложка:</p>
     <img src="<?= $book->cover ?>" width="150">
