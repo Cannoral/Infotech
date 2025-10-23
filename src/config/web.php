@@ -42,17 +42,17 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
     ],
     'params' => $params,
 ];
+
+require __DIR__ . '/container.php';
 
 if (YII_ENV_DEV) {
     // configuration adjustments for 'dev' environment
