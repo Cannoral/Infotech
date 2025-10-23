@@ -9,17 +9,21 @@ use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
 use app\domains\Book\BookRepositoryInterface;
 use app\domains\Book\BookServiceInterface;
+use app\domains\Cover\CoverServiceInterface;
+use yii\helpers\ArrayHelper;
 
 class BookController extends Controller
 {
     private BookServiceInterface $service;
     private BookRepositoryInterface $repo;
+    private CoverServiceInterface $coverService;
 
     public function __construct(
         $id, 
         $module, 
         BookServiceInterface $service,
         BookRepositoryInterface $repo,
+        CoverServiceInterface $coverService,
         $config = []
     )
     {
@@ -61,12 +65,21 @@ class BookController extends Controller
 
     public function actionCreate()
     {
-        $data = Yii::$app->request->post();
-        $book = $this->service->create($data);
-        if ($book) {
-            return $this->redirect(['view', 'id' => $book->id]);
+        $book = new Book();
+
+        if (Yii::$app->request->isPost) {
+            $data = Yii::$app->request->post();
+            $created = $this->service->create($data);
+
+            if ($created) {
+                Yii::$app->session->setFlash('success', 'Книга сохранена');
+                return $this->redirect(['view', 'id' => $created->id]);
+            }
         }
-        return $this->render('create');
+
+        return $this->render('create', [
+            'book' => $book,
+        ]);
     }
 
     public function actionUpdate($id)
@@ -76,13 +89,21 @@ class BookController extends Controller
             throw new NotFoundHttpException('Книга не найдена');
         }
 
-        $data = Yii::$app->request->post();
-        $updated = $this->service->update($book, $data);
-        if ($updated) {
-            return $this->redirect(['view', 'id' => $book->id]);
+        if (Yii::$app->request->isPost) {
+            $data = Yii::$app->request->post();
+            $updated = $this->service->update($book, $data);
+
+            if ($updated) {
+                Yii::$app->session->setFlash('success', 'Книга сохранена');
+                return $this->redirect(['view', 'id' => $updated->id]);
+            }
         }
 
-        return $this->render('update', ['book' => $book]);
+        $book->authorIds = ArrayHelper::getColumn($book->authors, 'id');
+
+        return $this->render('update', [
+            'book' => $book,
+        ]);
     }
 
     public function actionDelete($id)

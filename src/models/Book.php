@@ -3,9 +3,13 @@
 namespace app\models;
 
 use yii\db\ActiveRecord;
+use Yii;
 
 class Book extends ActiveRecord
 {
+    public $coverFile;
+    public $authorIds = [];
+
     public static function tableName()
     {
         return 'book';
@@ -18,8 +22,10 @@ class Book extends ActiveRecord
             [['description'], 'string'],
             [['year'], 'integer', 'min' => 0],
             [['isbn'], 'string', 'max' => 32],
-            [['cover'], 'string', 'max' => 255],
+            [['coverFile'], 'file', 'skipOnEmpty' => true, 'extensions' => ['jpg', 'jpeg', 'png', 'webp']],
             [['isbn'], 'unique'],
+            [['authorIds'], 'each', 'rule' => ['integer']],
+            [['cover'], 'string', 'max' => 255],
         ];
     }
 

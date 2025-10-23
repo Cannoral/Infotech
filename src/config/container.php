@@ -13,7 +13,7 @@ Yii::$container->set(BookServiceInterface::class, BookService::class);
 
 
 /**
- * Зависимости для отчетов внедрения через контейнер
+ * Зависимости для отчетов для внедрения через контейнер
  */
 use app\repositories\ReportRepository;
 use app\services\ReportService;
@@ -22,3 +22,16 @@ use app\domains\Report\ReportServiceInterface;
 
 Yii::$container->set(ReportRepositoryInterface::class, ReportRepository::class);
 Yii::$container->set(ReportServiceInterface::class, ReportService::class);
+
+/**
+ * Зависимости для авторов для внедрения через контейнер
+ */
+
+
+/**
+ * Зависимости для обложек книг для внедрения через контейнер
+ */
+use app\domains\Cover\CoverServiceInterface;
+use app\services\CoverService;
+
+Yii::$container->set(CoverServiceInterface::class, CoverService::class);

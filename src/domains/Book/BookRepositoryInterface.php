@@ -6,7 +6,7 @@ use app\models\Book;
 
 interface BookRepositoryInterface
 {
-    public function getAll(): array;
+    public function getAll(): array|bool;
 
     public function getById(int $id): ?Book;
 

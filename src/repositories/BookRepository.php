@@ -7,7 +7,7 @@ use app\domains\Book\BookRepositoryInterface;
 
 class BookRepository implements BookRepositoryInterface
 {
-    public function getAll(): array
+    public function getAll(): array|bool
     {
         return Book::find()->with('authors')->orderBy(['year' => SORT_DESC])->all();
     }

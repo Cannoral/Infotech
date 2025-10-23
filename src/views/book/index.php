@@ -7,7 +7,7 @@ $this->title = 'Каталог книг';
 <h1><?= Html::encode($this->title) ?></h1>
 
 <p>
-    <?= Html::a('ТОП-10 авторов', ['report/top-authors'], [
+    <?= Html::a('Добавить в каталог', ['book/create'], [
         'class' => 'btn btn-primary',
         'style' => 'margin-bottom:15px;'
     ]) ?>
