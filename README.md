@@ -8,8 +8,9 @@
 cp .env.example .env           # для docker-compose
 cp src/.env.example src/.env   # для приложения
 ```
-3. Поднять контейнеры:
+3. Собрать и поднять контейнеры:
 ```bash
+docker-compose build
 docker-compose up -d
 ```
 
