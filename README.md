@@ -13,6 +13,11 @@ cp src/.env.example src/.env   # для приложения
 docker-compose build
 docker-compose up -d
 ```
+4. Установка зависимостей и запуск миграций
+```bash
+docker-compose exec php composer install
+docker-compose exec php php yii migrate/up --interactive=0
+```
 
 Приложение будет доступно по адресу
 http://localhost:8080
