@@ -18,6 +18,8 @@ services:
         UID: ${PHP_UID}
         GID: ${PHP_GID}
     container_name: yii2_php
+    volumes:
+      - ./src:/var/www/html
     environment:
       - PHP_MEMORY_LIMIT=512M
     depends_on:
