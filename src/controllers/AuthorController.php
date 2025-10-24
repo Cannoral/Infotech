@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Author;
+use app\models\Subscription;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -117,5 +118,31 @@ class AuthorController extends Controller
         $this->repo->delete($author);
         Yii::$app->session->setFlash('success', 'Автор удален');
         return $this->redirect(['index']);
+    }
+
+    public function actionSubscribe($id)
+    {
+        $author = $this->repo->getById($id);
+        if (!$author) {
+            throw new NotFoundHttpException('Автор не найден.');
+        }
+
+        $subscription = new Subscription();
+
+        if (Yii::$app->request->isPost) {
+            $data = Yii::$app->request->post();
+            $subscription->load($data);
+            $subscription->author_id = $author->id;
+
+            if ($subscription->validate() && $subscription->save()) {
+                Yii::$app->session->setFlash('success', 'Вы подписались на обновления автора.');
+                return $this->redirect(['author/view', 'id' => $author->id]);
+            }
+        }
+
+        return $this->render('subscribe', [
+            'author' => $author,
+            'subscription' => $subscription,
+        ]);
     }
 }

@@ -22,6 +22,11 @@ $this->title = $author->name;
     'style' => 'margin-left:10px;',
 ]) ?>
 
+<?= Html::a('Подписаться на автора', ['author/subscribe', 'id' => $author->id], [
+    'class' => 'btn btn-success',
+    'style' => 'margin-left:10px;'
+]) ?>
+
 <p><strong>ФИО:</strong> <?= Html::encode($author->name) ?></p>
 
 <h3>Книги:</h3>

@@ -10,13 +10,17 @@ use yii\filters\AccessControl;
 use app\domains\Book\BookRepositoryInterface;
 use app\domains\Book\BookServiceInterface;
 use app\domains\Cover\CoverServiceInterface;
+use app\domains\Subscription\SubscriptionServiceInterface;
 use yii\helpers\ArrayHelper;
+
+use app\jobs\SmsNotificationJob;
 
 class BookController extends Controller
 {
     private BookServiceInterface $service;
     private BookRepositoryInterface $repo;
     private CoverServiceInterface $coverService;
+    private SubscriptionServiceInterface $subscriptionService;
 
     public function __construct(
         $id, 
@@ -24,11 +28,14 @@ class BookController extends Controller
         BookServiceInterface $service,
         BookRepositoryInterface $repo,
         CoverServiceInterface $coverService,
+        SubscriptionServiceInterface $subscriptionService,
         $config = []
     )
     {
         $this->repo = $repo;
         $this->service = $service;
+        $this->coverService = $coverService;
+        $this->subscriptionService = $subscriptionService;
         parent::__construct($id, $module, $config);
     }
 
@@ -124,5 +131,16 @@ class BookController extends Controller
         $this->service->delete($book);
         Yii::$app->session->setFlash('success', 'Книга удалена');
         return $this->redirect(['index']);
+    }
+
+    public function actionTest()
+    {
+        
+        $job = new SmsNotificationJob([
+            'phone' => '1234567890',
+            'message' => 'Test SMS message',
+        ]);
+
+        dd($job);
     }
 }

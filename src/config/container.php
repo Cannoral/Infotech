@@ -41,3 +41,11 @@ use app\domains\Cover\CoverServiceInterface;
 use app\services\CoverService;
 
 Yii::$container->set(CoverServiceInterface::class, CoverService::class);
+
+/**
+ * Зависимости для подписок для внедрения через контейнер
+ */
+use app\domains\Subscription\SubscriptionServiceInterface;
+use app\services\SubscriptionService;
+
+Yii::$container->set(SubscriptionServiceInterface::class, SubscriptionService::class);

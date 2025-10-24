@@ -8,17 +8,26 @@ use yii\db\Exception;
 use app\domains\Book\BookServiceInterface;
 use yii\web\UploadedFile;
 use app\domains\Cover\CoverServiceInterface;
+use app\domains\Subscription\SubscriptionServiceInterface;
+use app\events\BookCreatedEvent;
+use app\events\BookAuthorsAddedEvent;
 use Yii;
 
 class BookService implements BookServiceInterface
 {
     private BookRepositoryInterface $repo;
     private CoverServiceInterface $coverService;
+    private SubscriptionServiceInterface $subscriptionService;
 
-    public function __construct(BookRepositoryInterface $repo, CoverServiceInterface $coverService)
+    public function __construct(
+        BookRepositoryInterface $repo, 
+        CoverServiceInterface $coverService,
+        SubscriptionServiceInterface $subscriptionService
+    )
     {
         $this->repo = $repo;
         $this->coverService = $coverService;
+        $this->subscriptionService = $subscriptionService;
     }
 
     public function create(Book $book, array $data): ?Book
@@ -54,6 +63,12 @@ class BookService implements BookServiceInterface
                 ->execute();
         }
 
+        Yii::$app->trigger(BookCreatedEvent::class, new BookCreatedEvent($book));
+
+        foreach ($book->authors as $author) {
+            $this->subscriptionService->notifySubscribers($author, $book->title);
+        }
+
         return $book;
     }
 
@@ -82,12 +97,21 @@ class BookService implements BookServiceInterface
 
         Yii::$app->db->createCommand()->delete('book_author', ['book_id' => $book->id])->execute();
 
-        if (!empty($book->authorIds)) {
+        $newAuthorIds = $book->authorIds ?? [];
+        if (!empty($newAuthorIds)) {
             Yii::$app->db->createCommand()
                 ->batchInsert('book_author', ['book_id', 'author_id'],
-                    array_map(fn($id) => [$book->id, $id], $book->authorIds)
+                    array_map(fn($id) => [$book->id, $id], $newAuthorIds)
                 )
             ->execute();
+
+            $added = array_diff($newAuthorIds, $oldAuthorIds);
+            if ($added) {
+                Yii::$app->trigger(
+                    BookAuthorsAddedEvent::class, 
+                    new BookAuthorsAddedEvent($book, $added)
+                );
+            }
         }
 
         return $book;

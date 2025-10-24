@@ -37,7 +37,9 @@ $config = [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'levels' => ['error', 'warning', 'info'],
+                    'categories' => ['sms', '*'],
+                    'logFile' => '@runtime/logs/app.log',
                 ],
             ],
         ],
@@ -47,6 +49,16 @@ $config = [
             'showScriptName' => false,
             'rules' => [
             ],
+        ],
+        'mutex' => [
+            'class' => yii\mutex\MysqlMutex::class,
+        ],
+        'queue' => [
+            'class' => \yii\queue\db\Queue::class,
+            'db' => 'db', // DB connection component or its config 
+            'tableName' => '{{%queue}}', // Table name
+            'channel' => 'queue', // Queue channel key
+            'mutex' => \yii\mutex\MysqlMutex::class, // Mutex used to sync queries
         ],
     ],
     'params' => $params,
