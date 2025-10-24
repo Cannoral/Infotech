@@ -7,11 +7,40 @@ use yii\queue\JobInterface;
 use GuzzleHttp\Client;
 use Yii;
 
+/**
+ * Фоновая задача для отправки SMS уведомлений
+ * 
+ * Выполняет асинхронную отправку SMS сообщений через внешний API.
+ * Реализует интерфейс JobInterface для интеграции с системой очередей Yii2.
+ * Включает обработку ошибок и логирование результатов операций.
+ * 
+ * @package app\jobs
+ * @author Zernov Oleg <oi.zernov@gmail.com>
+ * @since 1.0
+ */
 class SmsNotificationJob extends BaseObject implements JobInterface
 {
+    /**
+     * @var string Номер телефона получателя SMS
+     */
     public string $phone;
+    
+    /**
+     * @var string Текст SMS сообщения
+     */
     public string $message;
 
+    /**
+     * Выполнение задачи отправки SMS
+     * 
+     * Отправляет SMS сообщение через внешний API с использованием HTTP клиента.
+     * Обрабатывает ответ API, логирует результат и выбрасывает исключения при ошибках.
+     * 
+     * @param mixed $queue Объект очереди (не используется в данной реализации)
+     * @return void
+     * @throws \RuntimeException При ошибке SMS API
+     * @throws \Throwable При других ошибках HTTP запроса
+     */
     public function execute($queue)
     {
         Yii::info("tETS", 'sms');

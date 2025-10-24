@@ -11,11 +11,37 @@ use app\domains\Author\AuthorRepositoryInterface;
 use app\domains\Author\AuthorServiceInterface;
 use yii\filters\AccessControl;
 
+/**
+ * Контроллер для управления авторами
+ * 
+ * Обеспечивает CRUD операции для авторов и функционал подписки на их обновления.
+ * Использует паттерн Repository и Service для разделения бизнес-логики.
+ * 
+ * @package app\controllers
+ * @author Zernov Oleg <oi.zernov@gmail.com>
+ * @since 1.0
+ */
 class AuthorController extends Controller
 {
+    /**
+     * @var AuthorRepositoryInterface Репозиторий для работы с авторами
+     */
     private AuthorRepositoryInterface $repo;
+    
+    /**
+     * @var AuthorServiceInterface Сервис для бизнес-логики авторов
+     */
     private AuthorServiceInterface $service;
 
+    /**
+     * Конструктор контроллера
+     * 
+     * @param string $id Идентификатор контроллера
+     * @param \yii\base\Module $module Модуль контроллера
+     * @param AuthorRepositoryInterface $repo Репозиторий авторов
+     * @param AuthorServiceInterface $service Сервис авторов
+     * @param array $config Конфигурация контроллера
+     */
     public function __construct(
         $id, 
         $module,
@@ -29,6 +55,14 @@ class AuthorController extends Controller
         parent::__construct($id, $module, $config);
     }
 
+    /**
+     * Настройка поведений контроллера
+     * 
+     * Настраивает контроль доступа для операций создания, обновления и удаления.
+     * Разрешает доступ только авторизованным пользователям.
+     * 
+     * @return array Массив конфигураций поведений
+     */
     public function behaviors()
     {
         return [
@@ -45,12 +79,29 @@ class AuthorController extends Controller
         ];
     }
 
+    /**
+     * Отображение списка всех авторов
+     * 
+     * Получает всех авторов из репозитория и отображает их в представлении index.
+     * 
+     * @return string Результат рендеринга представления
+     */
     public function actionIndex()
     {
         $authors = $this->repo->getAll();
         return $this->render('index', ['authors' => $authors]);
     }
 
+    /**
+     * Отображение детальной информации об авторе
+     * 
+     * Получает автора по идентификатору и отображает его данные.
+     * Если автор не найден, выбрасывается исключение 404.
+     * 
+     * @param int $id Идентификатор автора
+     * @return string Результат рендеринга представления
+     * @throws NotFoundHttpException Если автор не найден
+     */
     public function actionView($id)
     {
         $author = $this->repo->getById($id);
@@ -60,6 +111,15 @@ class AuthorController extends Controller
         return $this->render('view', ['author' => $author]);
     }
 
+    /**
+     * Создание нового автора
+     * 
+     * Обрабатывает GET запрос для отображения формы создания и POST запрос для сохранения нового автора.
+     * При успешном создании перенаправляет на страницу просмотра автора.
+     * При ошибках отображает форму с сообщениями об ошибках.
+     * 
+     * @return string|\yii\web\Response Результат рендеринга представления или редирект
+     */
     public function actionCreate()
     {
         $author = new Author();
@@ -82,6 +142,17 @@ class AuthorController extends Controller
         ]);
     }
 
+    /**
+     * Обновление данных существующего автора
+     * 
+     * Получает автора по идентификатору и обрабатывает его обновление.
+     * Обрабатывает GET запрос для отображения формы и POST запрос для сохранения изменений.
+     * При успешном обновлении перенаправляет на страницу просмотра автора.
+     * 
+     * @param int $id Идентификатор автора
+     * @return string|\yii\web\Response Результат рендеринга представления или редирект
+     * @throws NotFoundHttpException Если автор не найден
+     */
     public function actionUpdate($id)
     {
         $author = $this->repo->getById($id);
@@ -108,6 +179,16 @@ class AuthorController extends Controller
         ]);
     }
 
+    /**
+     * Удаление автора
+     * 
+     * Получает автора по идентификатору и удаляет его из системы.
+     * После успешного удаления перенаправляет на список авторов с сообщением об успехе.
+     * 
+     * @param int $id Идентификатор автора
+     * @return \yii\web\Response Редирект на список авторов
+     * @throws NotFoundHttpException Если автор не найден
+     */
     public function actionDelete($id)
     {
         $author = $this->repo->getById($id);
@@ -120,6 +201,17 @@ class AuthorController extends Controller
         return $this->redirect(['index']);
     }
 
+    /**
+     * Подписка на обновления автора
+     * 
+     * Позволяет пользователям подписываться на получение уведомлений об обновлениях автора.
+     * Обрабатывает GET запрос для отображения формы подписки и POST запрос для создания подписки.
+     * При успешной подписке перенаправляет на страницу автора с сообщением об успехе.
+     * 
+     * @param int $id Идентификатор автора
+     * @return string|\yii\web\Response Результат рендеринга представления или редирект
+     * @throws NotFoundHttpException Если автор не найден
+     */
     public function actionSubscribe($id)
     {
         $author = $this->repo->getById($id);
